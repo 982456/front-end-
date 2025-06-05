@@ -1,0 +1,171 @@
+<!-- Features:
+✅ Add new tasks (press Enter or click Add)
+
+✅ Click tasks to mark complete/incomplete
+
+✅ Delete tasks with the × button
+
+✅ Completed tasks show with strikethrough
+
+✅ Works offline - no internet needed
+
+✅ No frameworks or build tools required-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Task Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    #task-form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    #new-task {
+      flex-grow: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px 0 0 4px;
+    }
+    #add-btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+    #task-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 5px;
+      background-color: white;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .task-item.completed {
+      text-decoration: line-through;
+      color: #888;
+      background-color: #f9f9f9;
+    }
+    .task-text {
+      flex-grow: 1;
+      cursor: pointer;
+    }
+    .delete-btn {
+      color: #ff4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Task Manager</h1>
+  
+  <div id="task-form">
+    <input type="text" id="new-task" placeholder="Add a new task...">
+    <button id="add-btn">Add</button>
+  </div>
+  
+  <ul id="task-list">
+    <!-- Tasks will appear here -->
+  </ul>
+
+  <script>
+    // Sample tasks
+    let tasks = [
+      { id: 1, text: 'Buy groceries', completed: false },
+      { id: 2, text: 'Read a book', completed: true }
+    ];
+
+    // DOM elements
+    const taskInput = document.getElementById('new-task');
+    const addButton = document.getElementById('add-btn');
+    const taskList = document.getElementById('task-list');
+
+    // Render all tasks
+    function renderTasks() {
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        const taskItem = document.createElement('li');
+        taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+        
+        taskItem.innerHTML = `
+          <span class="task-text">${task.text}</span>
+          <button class="delete-btn" data-id="${task.id}">×</button>
+        `;
+        
+        taskList.appendChild(taskItem);
+      });
+
+      // Add event listeners to new elements
+      document.querySelectorAll('.task-text').forEach(item => {
+        item.addEventListener('click', toggleTask);
+      });
+      
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', deleteTask);
+      });
+    }
+
+    // Add new task
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (text) {
+        tasks.push({
+          id: Date.now(),
+          text: text,
+          completed: false
+        });
+        taskInput.value = '';
+        renderTasks();
+      }
+    }
+
+    // Toggle task completion
+    function toggleTask(e) {
+      const taskText = e.target.textContent;
+      const task = tasks.find(t => t.text === taskText);
+      if (task) {
+        task.completed = !task.completed;
+        renderTasks();
+      }
+    }
+
+    // Delete task
+    function deleteTask(e) {
+      const id = Number(e.target.getAttribute('data-id'));
+      tasks = tasks.filter(task => task.id !== id);
+      renderTasks();
+    }
+
+    // Event listeners
+    addButton.addEventListener('click', addTask);
+    taskInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+
+    // Initial render
+    renderTasks();
+  </script>
+</body>
+</html>
